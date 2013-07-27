@@ -1,0 +1,26 @@
+.m{
+	position: absolute;
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity: 0.5;
+	visibility:visible;
+
+}
+.hide{
+	visibility:hidden;
+}
+
+.blu{
+	color: #00FFFF;
+
+}
+.rosso{
+	color:#FF0000;
+}
+.nero{
+	color:#000000;
+}
+a{
+	text-decoration:none;
+	font-weight:bold;
+}

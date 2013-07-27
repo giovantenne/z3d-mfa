@@ -1,0 +1,22 @@
+<!ENTITY prefwindow.title "Z3D preferences">
+<!ENTITY pane1.title "Z3D preferences">
+<!ENTITY linkZoom.label "Zoom on link">
+<!ENTITY linkZoom.accesskey "Z">
+<!ENTITY rimbalza.label "Bounce">
+<!ENTITY rimbalza.accesskey "B">
+<!ENTITY rimbalzaGrande.label "Increase text size">
+<!ENTITY rimbalzaGrande.accesskey "C">
+<!ENTITY hideBkImage.label "Hide background images">
+<!ENTITY hideBkImage.accesskey "H">
+<!ENTITY scostamento.label "Min. height (Pixel)">
+<!ENTITY scostamento.accesskey "m">
+<!ENTITY zTimer.label "Speed of animations">
+<!ENTITY zTimer.accesskey "S">
+<!ENTITY zAltezza.label "Deep">
+<!ENTITY zAltezza.accesskey "M">
+<!ENTITY rimbalzaFreq.label "Animations">
+<!ENTITY rimbalzaFreq.accesskey "A">
+<!ENTITY glassesType.label "Glasses Colour">
+<!ENTITY glassesType.accesskey "G">
+<!ENTITY workaroundTimer.label "Debug timer (ms)">
+<!ENTITY workaroundTimer.accesskey "d">

@@ -1,0 +1,365 @@
+var scostamento=1;
+var profondita=1/4;
+var zTimer=50;
+var zAltezza=16;
+var workaroundTimer=0;
+var linkZoom=true;
+var rimbalza=true;
+//var tagRimbalza="B";
+var rimbalzaFreq=10;
+var rimbalzaGrande=true;
+var z3dAttivo=false;
+var unloaded=true;
+function myZ3D(){
+	//content.document.createStyleSheet("chrome://z3d/content/z3d.css");
+	if(z3dAttivo && unloaded){
+		unloaded=false;		
+		var styles = "@import url('chrome://z3d/content/z3d.css');";
+		var newSS=content.document.createElement('link');
+		newSS.rel='stylesheet';
+		newSS.href='data:text/css,'+escape(styles);
+		content.document.getElementsByTagName("head")[0].appendChild(newSS);
+		
+		startZ3D();
+	}
+}
+function zunload(){
+	//alert("");	
+	unloaded=true;
+}
+function setAttivo(){
+	z3dAttivo=!z3dAttivo;
+	if(z3dAttivo){
+		document.getElementById("z3d_svlabel").style.textDecoration="line-through";
+		myZ3D();
+	}else{
+		document.getElementById("z3d_svlabel").style.textDecoration="none";
+		content.document.location.reload();
+	}
+}
+
+
+
+var rimbalzaCount=0;
+var linkArray="0-0";
+function startZ3D(){
+		content.document.body.style.backgroundImage="url(chrome://z3d/content/Immagine.bmp)";
+		recursiveNavigate(content.document.body);
+		//alert(debug);
+}
+var notspace = /\S/;
+var  myID=0;
+var debug="";
+function recursiveNavigate(node){
+   var  i=0,  cNodes=node.childNodes, t;
+	while((t=cNodes.item(i++))){
+		switch(t.nodeType){
+            case 1: // Element Node
+		t.style.backgroundColor="transparent";	
+		
+		//t.normalize();		
+                recursiveNavigate(t);
+                break;
+            case 3: // Text Node
+                if(notspace.test(t.nodeValue)  ){
+					
+					var zWord=t.nodeValue.split(" ");
+					
+					for(var s=0;s<zWord.length;s++){
+						var newElement = content.document.createElement('span');
+						newElement.setAttribute("name", "z3dspan");
+						newElement.setAttribute("ID", "z3ID"+myID);
+					
+						//newElement.style.border="1px #ff0000 solid";
+						var newTextElement = content.document.createTextNode(zWord[s]);
+						newElement.appendChild(newTextElement);
+						var b=t.parentNode;
+						var a=b.insertBefore(newElement,t);
+										
+						b.style.visibility="hidden";
+						//per non chiamare  duplicateNode()					
+						var myFunction="executeDuplication('z3ID"+myID+"');";
+						window.setTimeout(myFunction,workaroundTimer);
+						myDelay++;
+						myID++;
+					}
+	
+					var c=b.removeChild(t);
+	
+					break;
+				}
+            case 8: // Comment Node (and Text Node without non-whitespace content)
+                node.removeChild(t);
+                i--;
+        }
+		
+	}
+}
+var myDebug="";
+var myDelay=1;
+function duplicateNode(){
+	var myNodes=content.document.getElementsByName("z3dspan");
+	for (var i=0; i< myNodes.length;i++){
+		var myTmpID=myNodes[i].getAttribute("id");
+		var myFunction="executeDuplication('"+myTmpID+"');";
+		window.setTimeout(myFunction,workaroundTimer);
+		myDelay++;
+	}
+}
+
+
+function executeDuplication(myObjID)
+{
+		var myObj=content.document.getElementById(myObjID);
+		var oldContent=replaceSpecials(myObj.innerHTML);
+		//var oldContent=(myObj.innerHTML).replace(/&nbsp;/g, ' ');
+		var newContent="";
+		var myPos=findPos(myObj);
+		var myX=myPos[0];
+		var myY=myPos[1];
+		myDebug+=myPos[0]+" "+myPos[1]+"\n";
+		myScost=parseInt(calculateDeep(myObj)*profondita);
+		
+		var newElement = content.document.createElement('div');
+		newElement.setAttribute("ID", myObjID+"l");
+		newElement.className="m rosso";
+		newElement.style.width=(1-1+myObj.offsetWidth)+"px";
+		newElement.style.height=(1-1+myObj.offsetHeight)+"px";
+		newElement.style.left=(1-1+myX-scostamento-myScost)+"px";
+		newElement.style.left=(1-1+myX)+"px";
+		newElement.style.top=1-1+myY+"px";
+		var newTextElement = content.document.createTextNode(oldContent);
+		newElement.appendChild(newTextElement);
+		var aL=myObj.appendChild(newElement);
+
+		var newElement = content.document.createElement('div');
+		newElement.setAttribute("ID", myObjID+"r");
+		newElement.className="m blu";
+		newElement.style.width=(1-1+myObj.offsetWidth)+"px";
+		newElement.style.height=(1-1+myObj.offsetHeight)+"px";
+		newElement.style.left=(1-1+myX+scostamento+myScost)+"px";
+		newElement.style.top=1-1+myY+"px";
+		var newTextElement = content.document.createTextNode(oldContent);
+		newElement.appendChild(newTextElement);
+		var aR=myObj.appendChild(newElement);
+			
+		if ((myObj.parentNode.tagName=="B"||myObj.parentNode.tagName=="STRONG"|| myObj.parentNode.style.fontWeight=="bold")&&rimbalza){
+			if (rimbalzaCount%rimbalzaFreq==0){
+				var zBlinkObjL=content.document.getElementById(myObjID+"l");
+				var zBlinkObjR=content.document.getElementById(myObjID+"r");
+				zBlinkObjL.style.whiteSpace="nowrap";
+				zBlinkObjR.style.whiteSpace="nowrap";
+				var ff="zblink('"+ myObjID+"','true');";
+				window.setTimeout(ff,zTimer);
+			}
+			rimbalzaCount++;
+		}else if(myObj.parentNode.tagName=="A"&& linkZoom){	
+			var zDiff=aR.style.left.replace("px","")-aL.style.left.replace("px","");
+			var objName=myObj.getAttribute("ID");
+			myObj.addEventListener("mouseover", function(event) { cresci(objName,zDiff); }, false); 
+			myObj.addEventListener("mouseout", function(event) { decresci(objName,zDiff); }, false); 		
+			linkArray+=";"+objName+"-stand";
+		}
+
+}
+
+		
+
+function cresci(zmyObjID,originalDist){
+	setLinkStatus(zmyObjID,"up");
+	zEseguiCrescita(zmyObjID,originalDist);
+}
+function decresci(zmyObjID,originalDist){
+	setLinkStatus(zmyObjID,"down");
+	zEseguiDecrescita(zmyObjID,originalDist);
+}
+function setLinkStatus(zmyObjID,status){
+	linkArray=linkArray.replace(zmyObjID+"-stand",zmyObjID+"-"+status);
+	linkArray=linkArray.replace(zmyObjID+"-up",zmyObjID+"-"+status);
+	linkArray=linkArray.replace(zmyObjID+"-down",zmyObjID+"-"+status);
+}
+
+function zEseguiCrescita(zmyObjID,originalDist){
+	if(linkArray.indexOf(zmyObjID+"-down")==-1){
+		var zBlinkObjL=content.document.getElementById(zmyObjID+"l");
+		var zBlinkObjR=content.document.getElementById(zmyObjID+"r");
+		var zDiff=zBlinkObjR.style.left.replace("px","")-zBlinkObjL.style.left.replace("px","");
+		if(zDiff<zAltezza){
+			zBlinkObjL.style.left=zBlinkObjL.style.left.replace("px","")-1+"px";
+			zBlinkObjR.style.left=zBlinkObjR.style.left.replace("px","")-1+1+1+"px";
+			zBlinkObjL.style.top=zBlinkObjL.style.top.replace("px","")-1+1+1+"px";
+			zBlinkObjR.style.top=zBlinkObjR.style.top.replace("px","")-1+1+1+"px";
+			if(rimbalzaGrande){		
+				zBlinkObjL.style.fontSize=100+zDiff*2+"%";
+				zBlinkObjR.style.fontSize=100+zDiff*2+"%";
+				
+			}	
+			var zmyFunction="zEseguiCrescita('"+zmyObjID+"','"+originalDist+"');";
+			window.setTimeout(zmyFunction,zTimer);
+		}else{
+			linkArray=linkArray.replace(zmyObjID+"-up",zmyObjID+"-stand");
+		}
+	}
+}
+
+function zEseguiDecrescita(zmyObjID,originalDist){
+	if(linkArray.indexOf(zmyObjID+"-up")==-1){
+		var zBlinkObjL=content.document.getElementById(zmyObjID+"l");
+		var zBlinkObjR=content.document.getElementById(zmyObjID+"r");
+		var zDiff=(zBlinkObjR.style.left.replace("px",""))-parseInt(zBlinkObjL.style.left.replace("px",""));
+		if(zDiff>originalDist){
+			zBlinkObjL.style.left=zBlinkObjL.style.left.replace("px","")-1+1+1+"px";
+			zBlinkObjR.style.left=zBlinkObjR.style.left.replace("px","")-1+"px";
+			zBlinkObjL.style.top=zBlinkObjL.style.top.replace("px","")-1+"px";
+			zBlinkObjR.style.top=zBlinkObjR.style.top.replace("px","")-1+"px";
+			if(rimbalzaGrande){			
+				//alert(zDiff+" "+originalDist);
+				zBlinkObjL.style.fontSize=100+zDiff*2+"%";
+				zBlinkObjR.style.fontSize=100+zDiff*2+"%";
+				
+			}		
+			var zmyFunction="zEseguiDecrescita('"+zmyObjID+"','"+originalDist+"');";
+			window.setTimeout(zmyFunction,zTimer);
+		}else{
+			linkArray=linkArray.replace(zmyObjID+"-up",zmyObjID+"-stand");
+			zBlinkObjL.style.fontSize=100+"%";
+			zBlinkObjR.style.fontSize=100+"%";
+		}
+	}
+}
+
+
+
+
+//var cresce=true;
+function zblink(zmyObjID,cresce){
+	var zBlinkObjL=content.document.getElementById(zmyObjID+"l");
+	var zBlinkObjR=content.document.getElementById(zmyObjID+"r");
+	var zDiff=zBlinkObjR.style.left.replace("px","")-zBlinkObjL.style.left.replace("px","");
+	if	(zDiff<0){
+		cresce="true";
+	}else if(zDiff>zAltezza){
+		cresce="false";
+	}
+	if(cresce=="true"){
+		zBlinkObjL.style.left=zBlinkObjL.style.left.replace("px","")-1+"px";
+		zBlinkObjR.style.left=zBlinkObjR.style.left.replace("px","")-1+1+1+"px";
+		zBlinkObjL.style.top=zBlinkObjL.style.top.replace("px","")-1+1+1+"px";
+		zBlinkObjR.style.top=zBlinkObjR.style.top.replace("px","")-1+1+1+"px";
+	}else{
+		zBlinkObjL.style.left=zBlinkObjL.style.left.replace("px","")-1+1+1+"px";
+		zBlinkObjR.style.left=zBlinkObjR.style.left.replace("px","")-1+"px";
+		zBlinkObjL.style.top=zBlinkObjL.style.top.replace("px","")-1+"px";
+		zBlinkObjR.style.top=zBlinkObjR.style.top.replace("px","")-1+"px";
+	}
+	if(rimbalzaGrande){
+		/*if(cresce=="true"){
+			zBlinkObjL.style.width=1-1+parseInt(zBlinkObjL.style.width.replace("px",""))+zDiff+"px";
+			zBlinkObjR.style.width=1-1+parseInt(zBlinkObjR.style.width.replace("px",""))+zDiff+"px";
+		}else{
+			zBlinkObjL.style.width=1-1+parseInt(zBlinkObjL.style.width.replace("px",""))-zDiff+"px";
+			zBlinkObjR.style.width=1-1+parseInt(zBlinkObjR.style.width.replace("px",""))-zDiff+"px";
+		}*/
+		zBlinkObjL.style.fontSize=100+zDiff*2+"%";
+		zBlinkObjR.style.fontSize=100+zDiff*2+"%";
+	}
+	var zmyFunction="zblink('"+zmyObjID+"','"+cresce+"');";
+	window.setTimeout(zmyFunction,zTimer);
+}
+
+
+
+/*function findPos(ooo) {
+	var obj2=ooo;
+	var curleft = 0
+	var curtop = 0;
+	var i=0;
+	if (obj2.offsetParent ) {
+			do {
+					curleft += (1-1+obj2.offsetLeft);
+					curtop += (1-1+obj2.offsetTop);
+					i++;
+			} while (obj2 = obj2.offsetParent);
+	}
+
+	return [curleft,curtop];
+}*/
+function findPos(ooo){
+	var aa=content.document.getBoxObjectFor(ooo); 
+	//var aa=content.document.getBoundingClientRect(ooo); 
+
+	return[aa.x,aa.y];
+
+
+}
+
+function zabsPos(o){	
+	var positionValue;
+	while (o.parentNode) {
+		if(!o.nodeValue){
+			positionValue=document.defaultView.getComputedStyle(o, null).getPropertyCSSValue("position").cssText;
+			if(positionValue && positionValue=="absolute"){
+				alert("");
+			}
+			/*var positionValue = current.document.defaultView.getComputedStyle(o, null).getPropertyCSSValue("position").cssText;
+			alert(positionValue);*/
+		}
+		
+		o=o.parentNode;
+	}
+	return false;
+}
+
+function  calculateDeep(o){
+	var deep = 0;
+	while (o.parentNode) {
+		deep++;
+		o=o.parentNode;
+	}
+	return (deep);
+}
+
+function trim(stringa){
+    while (stringa.substring(0,1) == ' '){
+        stringa = stringa.substring(1, stringa.length);
+    }
+    while (stringa.substring(stringa.length-1, stringa.length) == ' '){
+        stringa = stringa.substring(0,stringa.length-1);
+    }
+    return stringa;
+}
+
+
+function replaceSpecials(oString)
+{
+    var nString = oString;
+    
+    nString=nString.replace(/<!--([^>]|[^-]>|[^-]->)*-->/g, ' ');
+    
+    //N.B. could this regular expression be broken up into smaller parts?
+    //   [ED. No. It matches both valid and invalid (x)html tags]
+    nString=nString.replace(/<[\/!]?[a-z]+\d*(\s+[a-z][a-z\-]*(=[^\s>"']*|="[^"]*"|='[^']*')?)*\s*(\s\/)?>/gi, ' ');
+
+    nString=nString.replace(/[^\S ]+/g, ' ');
+    nString=nString.replace(/&lt;/g, '<');
+    nString=nString.replace(/&gt;/g, '>');
+    nString=nString.replace(/&nbsp;/g, ' ');
+    nString=nString.replace(/&quot;/g, '"');
+    nString=nString.replace(/&amp;/g, '\t');
+    nString=nString.replace(/&#?\w+;/g, ' ');
+    nString=nString.replace(/\t/g, '&');
+    nString=nString.replace(/ +/g, ' ');
+    return nString;
+}
+
+
+
+
+
+
+
+
+
+
+
+

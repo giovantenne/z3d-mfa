@@ -1,0 +1,5 @@
+<!ENTITY z3d.label "z3D">
+<!ENTITY z3dContext.label "Z3D">
+<!ENTITY z3dContext.accesskey "Z">
+<!ENTITY z3dToolbar.label "Z3d">
+<!ENTITY z3dToolbar.tooltip "z3d toolbar button!">

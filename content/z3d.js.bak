@@ -1,0 +1,102 @@
+function myZ3D(){
+	content.document.createStyleSheet("chrome://z3d/skin/z3d.css");
+	/*var fileref=content.document.createElement("link");
+  fileref.setAttribute("rel", "stylesheet");
+  fileref.setAttribute("type", "text/css");
+  fileref.setAttribute("href", "chrome://z3d/skin/z3d.css");*/
+
+
+
+	startZ3D();
+}
+
+
+
+
+
+
+
+
+var scostamento=0;
+var profondita=0.4;
+
+function startZ3D(){
+	recursiveNavigate(content.document.body);
+	duplicateNode();
+	content.document.body.style.backgroundImage="url(Immagine.bmp)";
+}
+
+function recursiveNavigate(obj){
+	var oo=obj;
+	
+	var myValTmp=oo.nodeValue;
+	if(myValTmp){
+		var myVal=myValTmp.replace(/\n/g, "").replace(/\r/g, "").replace(/\t/g, "");
+		if(trim(myVal)!=""){
+			var newElement = content.document.createElement('span');
+			newElement.setAttribute("name", "z3dspan");
+			var newTextElement = content.document.createTextNode(obj.nodeValue);
+			newElement.appendChild(newTextElement);
+			var b=obj.parentNode;
+			var a=b.insertBefore(newElement,obj);
+			var c=b.removeChild(obj);
+		}
+	}else{
+		oo.style.backgroundColor="transparent";
+
+		var  myObjArray=oo.childNodes;
+		for (var i=0; i< myObjArray.length;i++){
+			recursiveNavigate(myObjArray[i]);
+		}
+	}
+	
+}
+
+
+function duplicateNode(){
+	var myNodes=content.document.getElementsByName("z3dspan");
+	for (var i=0; i< myNodes.length;i++){
+		var myObj=myNodes[i]
+		var oldContent=myObj.innerHTML;
+		var newContent="";
+		var myPos=findPos(myObj);
+		newContent="<div  class='m blu' style='width:"+myObj.offsetWidth+"px;left:"+(1-1+myPos[0]+scostamento+calculateDeep(myObj))+"px; top:"+myPos[1]+"px'>"+oldContent+"</div>";
+		newContent+="<div  class='m rosso' style='width:"+myObj.offsetWidth+"px;left:"+(1-1+myPos[0]-scostamento-calculateDeep(myObj))+"px; top:"+myPos[1]+"px'>"+oldContent+"</div>";
+		newContent+="<"+myObj.parentNode.tagName+" class='hide'>"+oldContent+"</"+myObj.parentNode.tagName+">";
+		myNodes[i].innerHTML=newContent;
+	}
+	
+}
+
+
+
+function findPos(ooo) {
+	var obj=ooo;
+	var curleft = curtop = 0;
+	if (obj.offsetParent) {
+		do {
+				curleft += obj.offsetLeft;
+				curtop += obj.offsetTop;
+		} while (obj = obj.offsetParent);
+	}
+	return [curleft,curtop];
+}
+
+function  calculateDeep(o){
+	var deep = 0;
+	while (o.parentNode) {
+		deep++;
+		o=o.parentNode;
+	}
+	return (deep*profondita);
+}
+
+function trim(stringa){
+    while (stringa.substring(0,1) == ' '){
+        stringa = stringa.substring(1, stringa.length);
+    }
+    while (stringa.substring(stringa.length-1, stringa.length) == ' '){
+        stringa = stringa.substring(0,stringa.length-1);
+    }
+    return stringa;
+}

@@ -1,0 +1,7 @@
+content z3d-mfa location/
+content z3d-mfa location/ contentaccessible=yes
+content z3d-mfa content/
+locale z3d-mfa en-US locale/en-US/
+skin z3d-mfa classic/1.0 skin/
+overlay	chrome://browser/content/browser.xul	chrome://z3d-mfa/content/firefoxOverlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://z3d-mfa/skin/overlay.css

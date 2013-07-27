@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+  -   Version: MPL 1.1/GPL 2.0/LGPL 2.1
+  -
+  - The contents of this file are subject to the Mozilla Public License Version
+  - 1.1 (the "License"); you may not use this file except in compliance with
+  - the License. You may obtain a copy of the License at
+  - http://www.mozilla.org/MPL/
+  - 
+  - Software distributed under the License is distributed on an "AS IS" basis,
+  - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+  - for the specific language governing rights and limitations under the
+  - License.
+  -
+  - The Original Code is Z3D.
+  -
+  - The Initial Developer of the Original Code is
+  - Claudio Benvenuti.
+  - Portions created by the Initial Developer are Copyright (C) 2008
+  - the Initial Developer. All Rights Reserved.
+  -
+  - Contributor(s):
+  -
+  - Alternatively, the contents of this file may be used under the terms of
+  - either the GNU General Public License Version 2 or later (the "GPL"), or
+  - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+  - in which case the provisions of the GPL or the LGPL are applicable instead
+  - of those above. If you wish to allow use of your version of this file only
+  - under the terms of either the GPL or the LGPL, and not to allow others to
+  - use your version of this file under the terms of the MPL, indicate your
+  - decision by deleting the provisions above and replace them with the notice
+  - and other provisions required by the GPL or the LGPL. If you do not delete
+  - the provisions above, a recipient may use your version of this file under
+  - the terms of any one of the MPL, the GPL or the LGPL.
+  - 
+  - ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE prefwindow SYSTEM "chrome://z3d-mfa/locale/prefwindow.dtd">
+<prefwindow id="z3dPreferences" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&prefwindow.title;">
+  <prefpane id="pane1" label="&pane1.title;">
+    <preferences>
+      
+	  <preference id="linkZoom" name="extensions.z3d-mfa.linkZoom" type="bool"/>
+	  <preference id="rimbalza" name="extensions.z3d-mfa.rimbalza" type="bool"/>
+	  <preference id="rimbalzaGrande" name="extensions.z3d-mfa.rimbalzaGrande" type="bool"/>
+	  <preference id="hideBkImage" name="extensions.z3d-mfa.hideBkImage" type="bool"/>
+	  
+	  <preference id="scostamento" name="extensions.z3d-mfa.scostamento" type="int"/>
+	  <preference id="zTimer" name="extensions.z3d-mfa.zTimer" type="int"/>
+	  <preference id="zAltezza" name="extensions.z3d-mfa.zAltezza" type="int"/>
+	  <preference id="rimbalzaFreq" name="extensions.z3d-mfa.rimbalzaFreq" type="int"/>
+	  <preference id="glassesType" name="extensions.z3d-mfa.glassesType" type="int"/>
+	  <preference id="workaroundTimer" name="extensions.z3d-mfa.workaroundTimer" type="int"/>
+    </preferences>
+    
+	<checkbox id="linkZoom" preference="linkZoom" label="&linkZoom.label;" accesskey="&linkZoom.accesskey;" tooltiptext="Hyperlink come closer when mouse is over"/>
+    <checkbox id="rimbalza" preference="rimbalza" label="&rimbalza.label;" accesskey="&rimbalza.accesskey;" tooltiptext="Some originally bold text bounce on the page"/>
+    <checkbox id="rimbalzaGrande" preference="rimbalzaGrande" label="&rimbalzaGrande.label;" accesskey="&rimbalzaGrande.accesskey;" tooltiptext="Font size increase when come closer"/>
+    <checkbox id="hideBkImage" preference="hideBkImage" label="&hideBkImage.label;" accesskey="&hideBkImage.accesskey;" tooltiptext="Background images are hidden to increase readability"/>
+
+	<separator/>
+
+    <!--<label accesskey="&scostamento.accesskey;" control="scostamento">&scostamento.label;</label><textbox id="scostamento" preference="scostamento" type="number" min="0" max="10"/>
+    <label accesskey="&zAltezza.accesskey;" control="zAltezza">&zAltezza.label;</label><textbox id="zAltezza" preference="zAltezza" type="number" min="10" max="100" tooltiptext="Maximum distance the text can reach when come closer"/>-->
+
+
+<label accesskey="&zAltezza.accesskey;" control="scostamento">&zAltezza.label;</label>
+<menulist accesskey="&zAltezza.accesskey;"  id="zAltezza" preference="zAltezza" tooltiptext="Maximum distance the text can reach when come closer" >
+     <menupopup>
+      <menuitem label="Little deep" value="10"  />
+      <menuitem label="Normal" value="20" />
+      <menuitem label="Very deep" value="70" />
+     </menupopup>
+</menulist>
+
+
+
+
+    <label accesskey="&zTimer.accesskey;" control="zTimer">&zTimer.label;</label>
+<menulist accesskey="&zTimer.accesskey;"  id="zTimer" preference="zTimer" tooltiptext="Set the speed of animations" >
+     <menupopup>
+      <menuitem label="Slow" value="150"  />
+      <menuitem label="Normal" value="100" />
+      <menuitem label="Fast" value="50" />
+     </menupopup>
+</menulist>
+
+
+    <label accesskey="&rimbalzaFreq.accesskey;" control="rimbalzaFreq">&rimbalzaFreq.label;</label>
+<menulist accesskey="&rimbalzaFreq.accesskey;"  id="rimbalzaFreq" preference="rimbalzaFreq" tooltiptext="Set the frequency of bouncing  bold text">
+     <menupopup>
+      <menuitem label="Few" value="12"  />
+      <menuitem label="Normal" value="7" />
+      <menuitem label="Many" value="3" />
+     </menupopup>
+</menulist>
+
+<label accesskey="&glassesType.accesskey;" control="glassesType">&glassesType.label;</label>
+<menulist accesskey="&glassesType.accesskey;"  id="glassesType" preference="glassesType" tooltiptext="Set the colours of yours 3D glasses">
+     <menupopup>
+      <menuitem label="Red - Cyan" value="1"  />
+      <menuitem label="Red - Blue" value="2" />
+      <menuitem label="Red - Green" value="3" />
+      <menuitem label="Amber - Blue" value="4" />
+	  
+     </menupopup>
+</menulist>
+	
+	
+    <!--<label accesskey="&workaroundTimer.accesskey;" control="workaroundTimer">&workaroundTimer.label;</label><textbox id="workaroundTimer" preference="workaroundTimer"/>-->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+  </prefpane>
+</prefwindow>
